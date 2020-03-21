@@ -2,20 +2,17 @@
 <html lang="pt-br">
     <head>
         <meta charset="UTF-8">
-        <title>Listar Usuário</title>
+        <title>Celke</title>
     </head>
     <body>
         <h1>Listar usuário</h1>
         <?php
         require './Conn.php';
         
-        $nome = "INALDO";
         $conn = new Conn();
-        //$result_user = "SELECT * FROM usuarios WHERE nome=:nome ";
         $result_user = "SELECT * FROM usuarios";
         
         $resultado_user = $conn->getConn()->prepare($result_user);
-        $resultado_user->bindParam(':nome', $nome, PDO::PARAM_STR);
         $resultado_user->execute();
         
         while($row_user = $resultado_user->fetch(PDO::FETCH_ASSOC)):
@@ -27,10 +24,7 @@
             if(!empty($row_user['modified'])):
                 echo "Alterado: " . date('d/m/Y H:i:s', strtotime($row_user['modified'])) . "<br>";
             endif;
-            echo "<a href='visualizar.php?id=".$row_user['id']."'>Visualizar</a><br><br>"; 
-            echo "<a href='editar.php?id=".$row_user['id']."'>Editar</a><br><br>";
-            echo "<a href='apagar.php?id=".$row_user['id']."'>Apagar</a><br>";
-
+            echo "<a href='visualizar.php?id=".$row_user['id']."'>Visualizar</a>";
             echo "<hr>";
         endwhile;
         ?>
