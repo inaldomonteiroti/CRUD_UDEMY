@@ -5,7 +5,7 @@ session_start();
 <html lang="pt-br">
     <head>
         <meta charset="UTF-8">
-        <title>Celke</title>
+        <title>Listando Usuários/title>
     </head>
     <body>
         <h1>Listar usuário</h1>
