@@ -1,51 +1,43 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
     <head>
         <meta charset="UTF-8">
-        <title>Cadastro de Usuário</title>
+        <title>Celke</title>
     </head>
     <body>
-        <h1>Cadastrar usuário</h1>
+        <h1>Listar usuário</h1>
+        <a href="listar/cadastrar.php">Cadastrar</a><br><br>
         <?php
+        if (isset($_SESSION['msg'])) :
+            echo $_SESSION['msg'];
+            unset($_SESSION['msg']);
+        endif;
+        
         require './Conn.php';
 
-        
+        $conn = new Conn();
+        $result_user = "SELECT * FROM usuarios";
 
-        $Dados = filter_input_array(INPUT_POST, FILTER_DEFAULT);
-        //var_dump($Dados);            
-        if (!empty($Dados['SendCadUser'])):
-            unset($Dados['SendCadUser']);
-            $conn = new Conn();
-            
-            $result_cadastrar = "INSERT INTO usuarios (nome, email, usuario, senha, created) VALUES (:nome, :email, :usuario, :senha, NOW())";
-            $cadastrar = $conn->getConn()->prepare($result_cadastrar);
+        $resultado_user = $conn->getConn()->prepare($result_user);
+        $resultado_user->execute();
 
-            $cadastrar->bindParam(':nome', $Dados['nome'], PDO::PARAM_STR);
-            $cadastrar->bindParam(':email', $Dados['email'], PDO::PARAM_STR);
-            $cadastrar->bindParam(':usuario', $Dados['usuario'], PDO::PARAM_STR);
-            $cadastrar->bindParam(':senha', $Dados['senha'], PDO::PARAM_STR);
-
-            $cadastrar->execute();
-
-            if ($cadastrar->rowCount()):
-                echo "Cadastrado com sucesso";
+        while ($row_user = $resultado_user->fetch(PDO::FETCH_ASSOC)):
+            echo "ID: " . $row_user['id'] . "<br>";
+            echo "Nome: " . $row_user['nome'] . "<br>";
+            echo "E-mail: " . $row_user['email'] . "<br>";
+            echo "Usuário: " . $row_user['usuario'] . "<br>";
+            echo "Inserido: " . date('d/m/Y H:i:s', strtotime($row_user['created'])) . "<br>";
+            if (!empty($row_user['modified'])):
+                echo "Alterado: " . date('d/m/Y H:i:s', strtotime($row_user['modified'])) . "<br>";
             endif;
-        endif;
-        ?>        
-        <form name="CadUsuario" action="" method="POST">
-            <label>Nome: </label>   
-            <input type="text" name="nome" placeholder="Nome Completo"><br><br>
-
-            <label>E-mail: </label>   
-            <input type="email" name="email" placeholder="Seu melhor e-mail"><br><br>
-
-            <label>Usuário: </label>   
-            <input type="text" name="usuario" placeholder="Usuário para acessar o sistema"><br><br>
-
-            <label>Senha: </label>   
-            <input type="password" name="senha" placeholder="Senha"><br><br>
-
-            <input type="submit" value="Cadastrar" name="SendCadUser">
-        </form>
+            echo "<a href='visualizar.php?id=" . $row_user['id'] . "'>Visualizar</a><br>";
+            echo "<a href='editar.php?id=" . $row_user['id'] . "'>Editar</a><br>";
+            echo "<a href='apagar.php?id=" . $row_user['id'] . "'>Apagar</a><br>";
+            echo "<hr>";
+        endwhile;
+        ?>
     </body>
 </html>
